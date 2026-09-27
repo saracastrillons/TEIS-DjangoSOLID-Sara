@@ -12,23 +12,32 @@ class CompraAPIView(APIView):
     """
     Endpoint para procesar compras via JSON.
     POST /api/v1/comprar/
-    Payload: {"libro_id": 1, "direccion_envio": "Calle 123", "cantidad": 1}
+    Payload: {"libro_id": 1, "direccion_envio": "Calle 123"}
     """
 
     def post(self, request):
         serializer = OrdenInputSerializer(data=request.data)
+
         if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         datos = serializer.validated_data
 
         try:
             gateway = PaymentFactory.get_processor()
             servicio = CompraService(procesador_pago=gateway)
-            usuario = request.user if request.user.is_authenticated else None
+
+            usuario = (
+                request.user
+                if request.user.is_authenticated
+                else None
+            )
+
             resultado = servicio.ejecutar_compra(
                 libro_id=datos['libro_id'],
-                cantidad=datos.get('cantidad', 1),
                 direccion=datos['direccion_envio'],
                 usuario=usuario,
             )
@@ -36,12 +45,19 @@ class CompraAPIView(APIView):
             return Response(
                 {
                     'estado': 'exito',
-                    'mensaje': f'Orden creada. Total: {resultado}',
+                    'mensaje': f'Orden creada. Total: {resultado:.2f}',
                 },
                 status=status.HTTP_201_CREATED,
             )
 
         except ValueError as e:
-            return Response({'error': str(e)}, status=status.HTTP_409_CONFLICT)
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_409_CONFLICT
+            )
+
         except Exception:
-            return Response({'error': 'Error interno'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {'error': 'Error interno'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

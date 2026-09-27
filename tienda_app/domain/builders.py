@@ -34,7 +34,9 @@ class OrdenBuilder:
         if not self._libro:
             raise ValueError("Datos insuficientes para crear la orden.")
 
-        total_unitario = CalculadorImpuestos.obtener_total_con_iva(self._libro.precio)
+        total_unitario = CalculadorImpuestos.obtener_total_con_iva(
+            self._libro.precio
+        )
         total = Decimal(total_unitario) * self._cantidad
 
         orden = Orden.objects.create(
@@ -43,5 +45,6 @@ class OrdenBuilder:
             total=total,
             direccion_envio=self._direccion,
         )
+
         self.reset()
         return orden

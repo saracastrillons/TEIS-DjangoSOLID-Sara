@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Entorno virtual
+venv/
+
+# PyCharm
+.idea/
+
+# Base de datos local
+db.sqlite3
+
+# Logs locales
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
