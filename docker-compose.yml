@@ -12,7 +12,7 @@ services:
 
   web:
     build: .
-    command: gunicorn Tienda.wsgi:application --bind 0.0.0.0:8000
+    command: sh -c "python manage.py collectstatic --noinput && gunicorn Tienda.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - .:/app
     depends_on:
