@@ -1,11 +1,13 @@
 from rest_framework import status
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from tienda_app.infra.factories import PaymentFactory
+from tienda_app.models import Libro
 from tienda_app.services import CompraService
 
-from .serializers import OrdenInputSerializer
+from .serializers import LibroSerializer, OrdenInputSerializer
 
 
 class CompraAPIView(APIView):
@@ -61,3 +63,8 @@ class CompraAPIView(APIView):
                 {'error': 'Error interno'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+class ProductoListAPIView(ListAPIView):
+    queryset = Libro.objects.all()
+    serializer_class = LibroSerializer
